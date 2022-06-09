@@ -1,10 +1,8 @@
-from urllib.request import urlopen
-import argparse
-import sys
 from influxdb import InfluxDBClient
 from RPi import GPIO
 from time import sleep
 from datetime import datetime
+
 def send_to_influx(counter):
         client = InfluxDBClient(host='localhost', port=8086, username='gas_meter' , password='grafana', database='gas_meter')
         data = [
@@ -17,24 +15,26 @@ def send_to_influx(counter):
         print(data)
         client.write_points(data)
 
-def internet_on():
+def check_internet_on():
     try:
         urlopen("https://www.google.com")
         status = "Connected"
     except:
-        status = "Not connected"
+        status = "Not connected, reconnecting..."
+        os.system("sudo ifconfig wlan0 up")
     print("Internet connection: "+status)
+    sleep(5)
+    print(os.system("ifconfig"))
 
-internet_on()
+
 print("starting gas meter")
-
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(11, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 counter=0
 
 while True:
-
+        check_internet_on()
         GPIO.wait_for_edge(11, GPIO.RISING)
         a=datetime.now()
         print("rising edge: ",a)
