@@ -25,7 +25,7 @@ def check_internet_on():
         status = "Connected"
     except:
         status = "Not connected, reconnecting..."
-        os.system("sudo ifconfig wlan0 up")
+        os.system("sudo ifconfig wlan0 up")        
         sleep(8)
         print(os.system("iwconfig"))
     print("Internet connection: "+ status)
@@ -37,6 +37,19 @@ def wait_for_edge():
     sleep(2)
     return time
 
+def read_counter():
+    with open("counter.txt") as file:
+        lines = file.read().splitlines()
+        last_line = lines[-1]
+        print(last_line)
+        file.close()
+        return last_line
+
+def write_counter_into_file(counter):
+    with open("counter.txt","w") as file:
+         file.write(str(counter))
+         file.close()
+
 def check_if_impuls_high(GPIO_PIN_Number, time_before_rise, counter):
     if GPIO_PIN_Number == GPIO.HIGH:
         print("HIGH")
@@ -45,9 +58,12 @@ def check_if_impuls_high(GPIO_PIN_Number, time_before_rise, counter):
         print("Falling edge:", time)
         print("Impuls length: ", time-time_before_rise)
         sleep(1)
-        counter = counter+1
-        print("Impuls:", counter)
-        send_to_influx(counter)
+        counter = int(counter)+1
+        print(counter)
+        write_counter_into_file(counter)
+        sleep(2)
+        print("Impuls:", int(counter))
+        send_to_influx((counter))
         sleep(3)
         print("Waiting for new impuls")
     else:
@@ -60,7 +76,7 @@ check_internet_on()
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(11, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 #Initialisation counter
-counter=0
+counter = read_counter()
 
 while True:
         check_internet_on()
