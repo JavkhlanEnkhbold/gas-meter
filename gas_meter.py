@@ -1,3 +1,7 @@
+import os
+from urllib.request import urlopen
+import argparse
+import sys
 from influxdb import InfluxDBClient
 from RPi import GPIO
 from time import sleep
@@ -22,38 +26,44 @@ def check_internet_on():
     except:
         status = "Not connected, reconnecting..."
         os.system("sudo ifconfig wlan0 up")
-    print("Internet connection: "+status)
-    sleep(5)
-    print(os.system("ifconfig"))
+        sleep(8)
+        print(os.system("iwconfig"))
+    print("Internet connection: "+ status)
 
+def wait_for_edge():
+    GPIO.wait_for_edge(11, GPIO.RISING)
+    time = datetime.now()
+    print("Rising edge: ", time)
+    sleep(2)
+    return time
+
+def check_if_impuls_high(GPIO_PIN_Number, time_before_rise, counter):
+    if GPIO_PIN_Number == GPIO.HIGH:
+        print("HIGH")
+        GPIO.wait_for_edge(11, GPIO.FALLING)
+        time = datetime.now()
+        print("Falling edge:", time)
+        print("Impuls length: ", time-time_before_rise)
+        sleep(1)
+        counter = counter+1
+        print("Impuls:", counter)
+        send_to_influx(counter)
+        sleep(3)
+        print("Waiting for new impuls")
+    else:
+        print("---------------------Stoersignal-------------------------")
 
 print("starting gas meter")
+#Internet connection check
+check_internet_on()
+#GPIO connection setup
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(11, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-
+#Initialisation counter
 counter=0
 
 while True:
         check_internet_on()
-        GPIO.wait_for_edge(11, GPIO.RISING)
-        a=datetime.now()
-        print("rising edge: ",a)
-        sleep(2)
-        if GPIO.input(11) == GPIO.HIGH:
-                        print("HIGH")
-                        GPIO.wait_for_edge(11,GPIO.FALLING)
-                        b=datetime.now()
-                        print("falling edge: ",b)
-                        print("Impulslaenge: ",b-a)
-                        sleep(1)
-                        counter+=1
-                        print("Impulse", counter)
-                        send_to_influx(counter)
-
-                        sleep(3)
-                        print("warte auf neuen Impuls")
-
-        else:
-                        print("-----------------------Stoerimpuls----------------")
-                        continue
-
+        time_before_rising = wait_for_edge()
+        check_if_impuls_high(GPIO.input(11), time_before_rising, counter)
+        continue
