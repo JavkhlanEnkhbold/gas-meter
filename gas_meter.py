@@ -92,6 +92,7 @@ check_internet_on()
 GPIO.setmode(GPIO.BOARD)
 GPIO.setup(11, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 time, counter = query_last_entry()
+print(time, counter)
 
 while True:
         #check_internet_on()
