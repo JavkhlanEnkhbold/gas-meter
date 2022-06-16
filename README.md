@@ -4,7 +4,8 @@
 1. cd Desktop 
 2. git clone https://github.com/JavkhlanEnkhbold/gas-meter.git
 3. cd gas-meter 
-4. ->Testen
+4. cd monitoring (in RaspberryPi)
+5. run: python run_all.py
 
 
 ## Zu neuen Features

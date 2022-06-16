@@ -1,7 +1,4 @@
-import sys
 from influxdb import InfluxDBClient
-from influxdb_client.client.write_api import SYNCHRONOUS
-from RPi import GPIO
 from time import sleep
 from datetime import datetime
 import os
@@ -49,4 +46,4 @@ while True:
      print("The last_counter: " + str(last_counter()
      if last_register_time > 15:
          send_to_influx(last_counter)
-     sleep(30)
+     sleep(10)
