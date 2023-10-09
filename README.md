@@ -5,9 +5,9 @@
 2. git clone https://github.com/JavkhlanEnkhbold/gas-meter.git
 3. cd gas-meter 
 4. cd monitoring (in RaspberryPi)
-# ACHTUNG: BEIDE Python Scripts in dem selben Ordner "monitoring" kopieren!
 5. python gas_meter.py & python update_influx.py
 
+### NOTE: BEIDE Python Scripts in dem selben Ordner "monitoring" kopieren!
 
 
 ## Zu neuen Features
