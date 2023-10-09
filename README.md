@@ -1,4 +1,7 @@
 # gas-meter
+This is a small DIY gas-meter built with Raspberry Uno, a magnet sensor. Influxdb is installed in the Raspberry and later Grafan is being used for monitoring.
+Once the this is being built, you can attach it in magnetic gas meters which can be found in typical european old buildings.
+The project is being built during the "energy-crisis" in Germany, where the gas price on the Spot market more than tripled and to give the user more energy visibility of their own.
 
 ## Zum Testen
 1. cd Desktop 
